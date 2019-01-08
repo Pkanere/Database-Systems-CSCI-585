@@ -1,0 +1,105 @@
+HW 4
+
+
+1.
+COMMAND - 1:
+g = TinkerGraph.open().traversal()
+
+
+OUTPUT:
+==>graphtraversalsource[tinkergraph[vertices:0 edges:0], standard]
+
+
+EXPLANATION:
+a) This command creates a new graph instance of class TinkerGraph. 
+b) open() method opens a new graph instance and traversal is used to select graph traversal strategies.
+
+
+COMMAND - 2:
+g.addV("course").property(T.id, "CS101").as('v1').
+addV("course").property(T.id, "CS201").as('v2').
+addV("course").property(T.id, "CS220").as('v3').
+addV("course").property(T.id, "CS420").as('v4').
+addV("course").property(T.id, "CS334").as('v5').
+addV("course").property(T.id, "CS681").as('v6').
+addV("course").property(T.id, "CS400").as('v7').
+addV("course").property(T.id, "CS526").as('v8').
+addE("prereqs").from('v2').to('v1').
+addE("prereqs").from('v3').to('v2').
+addE("prereqs").from('v4').to('v3').
+addE("prereqs").from('v5').to('v2').
+addE("prereqs").from('v6').to('v5').
+addE("prereqs").from('v7').to('v5').
+addE("prereqs").from('v8').to('v7').
+addE("coreqs").from('v8').to('v7').
+addE("coreqs").from('v4').to('v3').iterate()
+
+
+OUTPUT:
+gremlin> g
+==>graphtraversalsource[tinkergraph[vertices:8 edges:9], standard]
+
+
+EXPLANATION:
+a) addV() creates a vertex with specified id which is member of enum T. 
+b) as() is used to specify label to vertices which can be used to access it further. 
+c) addE create directed edges between specified vertices using from() and to(). 
+d) iterate() is a terminal step that returns a traversal.
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+2.
+COMMAND:
+g.V().as('a').out('coreqs').as('b').in('prereqs').where(eq('a')).select('a','b')
+
+
+OUTPUT:
+==>[a:v[CS420],b:v[CS220]]
+==>[a:v[CS526],b:v[CS400]]
+
+
+EXPLANATION:
+a) This command finds vertex which has an outgoing edge ‘coreqs’ using out() and labels it as ‘a’. 
+b) out() moves traverser to vertex with which ‘a’ has relation ‘coreqs’ and labels it as ‘b’.
+c) in() finds the vertex which is a ‘prereqs’ for vertex ‘b’ and checks if it’s equal to vertex ‘a’ using where().
+d) select() selects specified label ‘a’ and ‘b’ within a path.
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+3.
+COMMAND:
+g.V().hasId('CS526').out('prereqs').emit().repeat(__.out('prereqs'))
+
+
+OUTPUT:
+==>v[CS400]
+==>v[CS334]
+==>v[CS201]
+==>v[CS101]
+
+
+EXPLANATION:
+a) This command finds vertex having unique Identifier ‘CS526’ using hasID().
+b) Get the vertex with which ‘CS526’ has ‘prereqs’ relation using out().
+c) repeat() creates a loop traversal until out(‘prereqs’) has no node ie. break point
+d) emit() is used in conjunction with repeat() to output the vertices until it encounters break point.
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+4.
+COMMAND:
+g.V().hasId('CS101').repeat(__.in()).emit().path().count(local).max()
+
+
+OUTPUT:
+==>5
+
+
+EXPLANATION:
+a) This command finds vertex having unique Identifier ‘CS101’ using hasID().
+b) repeat() creates a loop traversal until in() reaches a vertex with no incoming edges.
+c) path() moves traverser through series of steps until repeat() finds a breakpoint.
+d) emit() is used in conjunction with repeat() to output the vertices until it encounters break point.
+e) count(local) keeps a count of these vertex which are local objects and max returns the maximum count for different paths found by traverser.
