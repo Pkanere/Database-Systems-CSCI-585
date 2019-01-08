@@ -1,0 +1,23 @@
+/*Table creation*/
+create table USC_favspots (
+name VARCHAR,
+shape geometry);
+
+/*Insertion*/
+insert into USC_favspots values 
+('Home','POINT(-118.27981850000003 34.025175)'),
+('Exposition/Vermont','POINT(-118.29099923339527 34.0185887842465041)'),
+('Vermont/Jefferson','POINT(-118.29013110006599 34.025415204317774)'),
+('Jefferson/Figueroa','POINT(-118.2802221169186 34.021752911804576)'),
+('Figueroa/Exposition','POINT(-118.28221231666248 34.01863324754128)'),
+('Associate Park','POINT(-118.28620476771903 34.02094601175128)'),
+('EQuad viterbi','POINT(-118.28878020653036 34.020327801798544)'),
+('University Religious centre','POINT(-118.2849552157947 34.02314072663804)'),
+('VKC Library','POINT(-118.28445577414544 34.0213673555335)');
+
+/* Find nearest neighbour*/
+select name, st_astext(shape) as location, st_distance(shape,'POINT(-118.27981850000003 34.025175)') as distance from USC_favspots where name<>'Home' order by st_distance(shape,'POINT(-118.2798185 34.025175)') limit 3;
+
+/* Find convex hull*/
+select st_astext(st_convexHull(st_collect(shape))) as convex_hull
+from USC_favspots;
